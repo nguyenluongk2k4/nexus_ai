@@ -12,18 +12,11 @@ import google.generativeai as genai
 # THÊM THƯ VIỆN SENTENCE TRANSFORMER
 from sentence_transformers import SentenceTransformer
 
+# Import config
+from app.config import settings
+
 # Load environment variables
 load_dotenv()
-
-# --- Cấu hình CỐT LÕI ---
-INTELLIGENT_DB_PATH = './chroma' 
-INTELLIGENT_COLLECTION = 'ksa_project' 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-CHAT_SESSIONS_FILE = 'smart_chat_sessions.json'
-MAX_CONTEXT_MESSAGES = 10 
-
-# THÊM MODEL EMBEDDING GIỐNG HỆT FILE INGEST.PY
-EMBEDDING_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
 
 class SmartChatMemory:
     """
@@ -31,8 +24,8 @@ class SmartChatMemory:
     Lưu và tải session từ file JSON.
     """
     
-    def __init__(self, sessions_file: str = CHAT_SESSIONS_FILE):
-        self.sessions_file = sessions_file
+    def __init__(self, sessions_file: str = None):
+        self.sessions_file = sessions_file or settings.CHAT_SESSIONS_FILE
         self.sessions = self.load_sessions()
         self.current_session_id = None
         self.current_context = []
@@ -79,8 +72,8 @@ class SmartChatMemory:
         
         # Thêm vào context (bộ nhớ tạm) cho prompt tiếp theo
         self.current_context.append(message)
-        if len(self.current_context) > MAX_CONTEXT_MESSAGES:
-            self.current_context = self.current_context[-MAX_CONTEXT_MESSAGES:]
+        if len(self.current_context) > settings.MAX_CONTEXT_MESSAGES:
+            self.current_context = self.current_context[-settings.MAX_CONTEXT_MESSAGES:]
         
         self.save_sessions()
     
@@ -165,21 +158,21 @@ class SmartChatbot:
         print("🧠 Khởi tạo Smart Chatbot...")
         
         # 1. Setup Gemini
-        if not GOOGLE_API_KEY:
+        if not settings.GOOGLE_API_KEY:
             raise ValueError("Không tìm thấy GOOGLE_API_KEY. Hãy set nó trong file .env")
         
-        genai.configure(api_key=GOOGLE_API_KEY)
+        genai.configure(api_key=settings.GOOGLE_API_KEY)
         self.gemini_model = genai.GenerativeModel('gemini-2.5-flash')
         print("   ✅ Model Gemini đã sẵn sàng.")
         
         # 2. Setup RAG retriever (ĐÃ SỬA: Truyền tên model vào)
-        if not os.path.exists(INTELLIGENT_DB_PATH):
-            raise FileNotFoundError(f"Không tìm thấy thư mục database: {INTELLIGENT_DB_PATH}")
+        if not os.path.exists(settings.INTELLIGENT_DB_PATH):
+            raise FileNotFoundError(f"Không tìm thấy thư mục database: {settings.INTELLIGENT_DB_PATH}")
         
         self.retriever = SmartRAGRetriever(
-            INTELLIGENT_DB_PATH, 
-            INTELLIGENT_COLLECTION,
-            EMBEDDING_MODEL_NAME # Truyền tên model vào
+            settings.INTELLIGENT_DB_PATH, 
+            settings.INTELLIGENT_COLLECTION,
+            settings.EMBEDDING_MODEL_NAME # Truyền tên model vào
         )
         print(f"   ✅ Đã kết nối database: {self.retriever.collection.count()} tài liệu.")
         

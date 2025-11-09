@@ -9,22 +9,15 @@ from dotenv import load_dotenv
 
 # Import existing chatbot logic
 from app.smart_chatbot import SmartChatbot
+from app.config import settings
 
 load_dotenv()
 
 app = FastAPI(title="AI Skill Tree Chat API")
 
-# Allow local dev origins for Vite (3000/5173)
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -157,4 +150,4 @@ async def websocket_endpoint(websocket: WebSocket):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app.server:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app.server:app", host=settings.HOST, port=settings.PORT, reload=True)

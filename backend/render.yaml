@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: nexus-ai-backend
+    runtime: python
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        fromGroup: PORT
+      - key: CORS_ORIGINS
+        sync: false
+      - key: INTELLIGENT_DB_PATH
+        value: ./chroma
+      - key: INTELLIGENT_COLLECTION
+        value: ksa_project
+      - key: CHAT_SESSIONS_FILE
+        value: smart_chat_sessions.json
+      - key: MAX_CONTEXT_MESSAGES
+        value: 10
+    autoDeploy: true

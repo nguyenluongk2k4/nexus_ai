@@ -63,7 +63,37 @@ VITE_WS_URL=ws://localhost:8000/ws
 ```env
 GOOGLE_API_KEY=your_api_key_here
 INTELLIGENT_DB_PATH=./chroma
+INTELLIGENT_COLLECTION=ksa_project
+HOST=0.0.0.0
+PORT=8000
+CORS_ORIGINS=http://localhost:3000,http://localhost:5173
 ```
+
+See `.env.example` files in each folder for complete configuration options.
+
+## 🚀 Deployment
+
+### Backend on Render.com
+
+See detailed guide: [backend/DEPLOY.md](backend/DEPLOY.md)
+
+Quick steps:
+1. Push to GitHub
+2. Create Web Service on Render
+3. Set environment variables
+4. Deploy!
+
+### Frontend on Vercel/Netlify
+
+```bash
+cd frontend
+npm run build
+# Deploy dist/ folder
+```
+
+Environment variables needed:
+- `VITE_API_URL` - Your backend URL on Render
+- `VITE_WS_URL` - Your WebSocket URL on Render
 
 ## 🛠️ Tech Stack
 
