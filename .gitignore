@@ -8,7 +8,6 @@ frontend/.env.local
 backend/__pycache__/
 backend/*.pyc
 backend/.env
-backend/chroma/
 backend/smart_chat_sessions.json
 
 # IDEs
