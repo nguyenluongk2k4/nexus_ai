@@ -1,4 +1,4 @@
-import { Home, GitBranch, FileQuestion, Briefcase, TrendingUp, LogOut } from 'lucide-react';
+import { Home, GitBranch, FileQuestion, Briefcase, TrendingUp, LogOut, MessageSquare, Users, Calendar } from 'lucide-react';
 
 interface NavigationProps {
   currentPage: string;
@@ -12,6 +12,9 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
     { id: 'quiz', label: 'Quiz', icon: FileQuestion },
     { id: 'jobs', label: 'Job Matches', icon: Briefcase },
     { id: 'insights', label: 'Insights', icon: TrendingUp },
+    { id: 'timeline', label: 'Lịch Học', icon: Calendar },
+    { id: 'chat', label: 'Chat', icon: MessageSquare },
+    { id: 'forum', label: 'Diễn Đàn', icon: Users },
   ];
 
   return (
@@ -26,7 +29,8 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
       <div className="flex-1 space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = currentPage === item.id;
+          const isActive = currentPage === item.id || 
+            (item.id === 'forum' && (currentPage === 'subforum' || currentPage === 'thread'));
           return (
             <button
               key={item.id}

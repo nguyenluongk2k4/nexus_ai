@@ -38,8 +38,8 @@ start "Vite Dev" cmd /k "npm run dev"
 echo Đợi 2 giây để server bắt đầu...
 timeout /t 2 >nul
 
-echo Mở trình duyệt tới http://localhost:5173 (mặc định Vite)...
-start "" "http://localhost:5173"
+echo Mở trình duyệt tới http://localhost:3000 (theo cấu hình vite.config.ts)...
+start "" "http://localhost:3000"
 
 echo Done. Nếu trình duyệt chưa tải được, hãy chờ vài giây và thử tải lại.
 pause
