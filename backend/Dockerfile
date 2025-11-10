@@ -1,18 +1,18 @@
-# 1. Base image
-FROM python:3.11
+# 1. Base image Python
+FROM python:3.10-slim
 
-# 2. Working dir inside container
+# 2. Set working directory inside container
 WORKDIR /app
 
-# 3. Copy only backend folder into container
-COPY backend/ ./
+# 3. Copy backend code
+COPY . .
 
 # 4. Install dependencies
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# 5. Expose port (Railway sẽ inject PORT)
+# 5. Expose port
 EXPOSE 8000
 
-# 6. Start uvicorn
-CMD ["uvicorn", "app_server:app", "--host", "0.0.0.0", "--port", "8000"]
+# 6. Start server
+CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "8000"]
