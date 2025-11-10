@@ -18,6 +18,7 @@ Tài liệu này mô tả hai phương án triển khai backend FastAPI của Ne
 - `backend/Procfile`
 - `backend/.env.example`
 - `backend/runtime.txt`
+- `backend/Dockerfile` (Railway sẽ ưu tiên Dockerfile nếu có)
 
 ### 2. Cấu hình project Railway
 
