@@ -1,27 +1,18 @@
-# Railway-compatible Docker image for FastAPI backend
-FROM python:3.11-slim AS runtime
+# 1. Base image Python
+FROM python:3.11-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PORT=8000
-
+# 2. Set working directory inside container
 WORKDIR /app
 
-# Install system deps required by torch / sentence-transformers
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential libglib2.0-0 libsm6 libxext6 libxrender-dev git \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt ./
-RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
-
+# 3. Copy backend code
 COPY . .
 
-# Ensure default data directories exist for volume mounts
-RUN mkdir -p /app/data/chroma
+# 4. Install dependencies
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-EXPOSE ${PORT}
+# 5. Expose port (Railway sẽ inject $PORT)
+EXPOSE 8000
 
-CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "${PORT}"]
+# 6. Start uvicorn
+CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "8000"]
