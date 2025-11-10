@@ -1,18 +1,36 @@
-# 1. Base image Python
-FROM python:3.10-slim
+# 1. Base image
+FROM python:3.11-slim AS runtime
 
-# 2. Set working directory inside container
+# 2. Prevent Python from writing .pyc & flush stdout immediately
+ENV PYTHONDONTWRITEBYTECODE=1 \
+	PYTHONUNBUFFERED=1 \
+	PIP_NO_CACHE_DIR=1 \
+	PORT=8000
+
+# Allow overriding application directory when build context is not repository root
+ARG APP_DIR=backend
+
+# 3. App working directory
 WORKDIR /app
 
-# 3. Copy backend code
-COPY . .
+# 4. System dependencies for torch/sentence-transformers
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends build-essential libglib2.0-0 libsm6 libxext6 libxrender-dev git \
+	&& rm -rf /var/lib/apt/lists/*
 
-# 4. Install dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# 5. Install requirements first for better build caching
+COPY ${APP_DIR}/requirements.txt ./requirements.txt
+RUN pip install --upgrade pip \
+	&& pip install -r requirements.txt
 
-# 5. Expose port
-EXPOSE 8000
+# 6. Copy application source
+COPY ${APP_DIR}/ .
 
-# 6. Start server
-CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "8000"]
+# 7. Ensure default data directories exist (overridden by Railway volume if provided)
+RUN mkdir -p /app/data/chroma
+
+# 8. Expose service port (Railway overrides PORT env when running)
+EXPOSE ${PORT}
+
+# 9. Launch FastAPI via Uvicorn
+CMD ["uvicorn", "app.server:app", "--host", "0.0.0.0", "--port", "${PORT}"]
