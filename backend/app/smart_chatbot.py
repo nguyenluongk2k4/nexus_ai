@@ -26,6 +26,9 @@ class SmartChatMemory:
     
     def __init__(self, sessions_file: str = None):
         self.sessions_file = sessions_file or settings.CHAT_SESSIONS_FILE
+        sessions_dir = os.path.dirname(self.sessions_file)
+        if sessions_dir:
+            os.makedirs(sessions_dir, exist_ok=True)
         self.sessions = self.load_sessions()
         self.current_session_id = None
         self.current_context = []
